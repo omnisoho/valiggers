@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - valiggers
+name: Build and deploy Node.js app to Azure Web App - valiggers-2
 
 on:
   push:
@@ -51,15 +51,15 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_684AC64F4F6D47159DB9EDA305060EB3 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D74FF5E286C042DA8F15D6F6B9E60EF7 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_898407468C1A4186952A3219B59CF75A }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9FA5D1AA8B5F4106B6262AE89B22DFF5 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CEEB002392104DB2966CD4B5E774E4BF }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D2859755912C41A8A2E3681ABABAA0E1 }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'valiggers'
+          app-name: 'valiggers-2'
           slot-name: 'Production'
           package: .
           
