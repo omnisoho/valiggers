@@ -1,0 +1,355 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  // previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Something {
+  id       Int              @id @default(autoincrement())
+  name     String
+}
+
+model Person {
+  id     Int              @id @default(autoincrement())
+  email  String           @unique
+  name   String
+  avatar String?
+}
+
+
+model User {
+  user_id    Int      @id @default(autoincrement())
+  email      String   @unique
+  password   String
+  username   String   @unique
+  age        Int?
+  gender     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  bio        String?   @db.Text
+  weight     Float?
+  bodyfat    Float?
+  height     Float?
+  pfpUrl     String?
+
+  // Existing relations...
+  userMeals     UserMeal[]
+  dailyIntakes  DailyIntake[]
+  workouts      Workout[]
+  comments      Comment[]
+  presets       Preset[]
+  weeklyPlan    WeeklyPlan?
+
+  // ADD THIS:
+  notes        Note[]     // ← Opposite side of the Note → User relation
+}
+
+
+model Note {
+  note_id    Int      @id @default(autoincrement())
+  content    String   @db.Text
+  createdAt  DateTime @default(now())
+  pinned     Boolean  @default(false)
+
+  // Relations
+  user       User     @relation(fields: [userId], references: [user_id])
+  userId     Int
+}
+
+model UserMeal {
+  id            Int       @id @default(autoincrement())
+  userId        Int    @unique
+  user          User      @relation(fields: [userId], references: [user_id])
+  totalCalories Int       @default(0)
+  totalProtein  Float     @default(0)  // in grams
+  totalFat      Float     @default(0)  // in grams
+  totalSugar    Float     @default(0)  // in grams
+  calorieLimit  Int       @default(2000)   // default daily calorie limit
+  meals         Meal[]
+  createdAt     DateTime  @default(now())
+}
+
+model DailyIntake {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  user          User      @relation(fields: [userId], references: [user_id])
+  date          DateTime
+  totalCalories Int       @default(0)
+  totalProtein  Float     @default(0)
+  totalFat      Float     @default(0)
+  totalSugar    Float     @default(0)
+  calorieLimit  Int       @default(2000)   // default daily calorie limit
+}
+
+// ----------------------
+// Meal: meals created by users
+// ----------------------
+model Meal {
+  id          Int      @id @default(autoincrement())
+  mealName    String
+  mealType    String
+  calories    Int
+  protein     Float    @default(0)
+  fat         Float    @default(0)
+  sugar       Float    @default(0)
+  photoUrl    String
+
+  userMealId  Int
+  userMeal    UserMeal @relation(fields: [userMealId], references: [id])
+
+  mealIngredients MealIngredient[] // 👈 REQUIRED
+
+  createdAt   DateTime @default(now())
+}
+
+model Ingredient {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  name           String
+
+  // Stock status (changed from guide / shopping)
+  status         IngredientStatus @default(IN_STOCK)
+
+  // Shopping-related status (used later, but harmless now)
+  purchaseStatus PurchaseStatus   @default(PENDING)
+
+  // Relations
+  mealIngredients MealIngredient[]
+
+  @@unique([userId, name]) // prevent duplicate ingredient names per user
+}
+
+enum IngredientStatus {
+  IN_STOCK
+  RUNNING_OUT
+  OUT_OF_STOCK
+}
+
+enum PurchaseStatus {
+  PENDING
+  PURCHASED
+  NOT_PURCHASED
+}
+
+model MealIngredient {
+  id           Int @id @default(autoincrement())
+
+  mealId       Int
+  ingredientId Int
+
+  quantity     Float @default(0)
+
+  // Relations
+  meal         Meal       @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@unique([mealId, ingredientId]) // ingredient appears once per meal
+}
+
+
+
+
+
+enum ResourceType {
+  ARTICLE
+  VIDEO
+  LINK
+  PDF
+}
+
+enum ResourceDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+model ResourceCategory {
+  id        Int        @id @default(autoincrement())
+  name      String
+  slug      String     @unique          // e.g. "strength", "nutrition"
+  resources Resource[]
+}
+
+model Resource {
+  id          Int                 @id @default(autoincrement())
+  title       String
+  description String
+  url         String
+  type        ResourceType
+  difficulty  ResourceDifficulty
+
+  categoryId  Int
+  category    ResourceCategory    @relation(fields: [categoryId], references: [id])
+
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+//workout planner
+
+// ========================================
+//  WORKOUT TABLE
+// ========================================
+
+model Workout {
+  id          Int       @id @default(autoincrement())
+  name        String
+  muscleGroup String
+  difficulty  Int?
+  durationMin Int?
+  sets        Int?
+  reps        Int?
+  description String
+
+  upvotes     Int       @default(0)
+  downvotes   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  createdById Int?
+  createdBy   User?     @relation(fields: [createdById], references: [user_id])
+
+  comments    Comment[]
+  presetItems PresetItem[]
+}
+
+// ========================================
+//  COMMENT TABLE
+// ========================================
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+
+  workoutId Int
+  workout   Workout  @relation(fields: [workoutId], references: [id])
+
+  userId Int?
+  user   User?     @relation(fields: [userId], references: [user_id])
+}
+
+// ========================================
+//  PRESET TABLE
+// ========================================
+
+model Preset {
+  id            Int       @id @default(autoincrement())
+  name          String
+  notes         String?
+  totalDuration Int?
+  difficulty    Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [user_id])
+
+  items  PresetItem[]
+
+  // Inverse relations from WeeklyPlan
+  mondayPlans    WeeklyPlan[] @relation("MondayPreset")
+  tuesdayPlans   WeeklyPlan[] @relation("TuesdayPreset")
+  wednesdayPlans WeeklyPlan[] @relation("WednesdayPreset")
+  thursdayPlans  WeeklyPlan[] @relation("ThursdayPreset")
+  fridayPlans    WeeklyPlan[] @relation("FridayPreset")
+  saturdayPlans  WeeklyPlan[] @relation("SaturdayPreset")
+  sundayPlans    WeeklyPlan[] @relation("SundayPreset")
+}
+
+// ========================================
+//  PRESET ITEM TABLE
+// ========================================
+
+model PresetItem {
+  id    Int @id @default(autoincrement())
+  order Int
+
+  workoutId Int?
+  workout   Workout? @relation(fields: [workoutId], references: [id])
+
+  customName        String?
+  customSets        Int?
+  customReps        Int?
+  customDurationMin Int?
+  customNotes       String?
+
+  presetId Int
+  preset   Preset @relation(fields: [presetId], references: [id])
+}
+
+// ========================================
+//  WEEKLY PLAN TABLE
+// ========================================
+
+model WeeklyPlan {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int @unique
+  user   User @relation(fields: [userId], references: [user_id])
+
+  mondayId    Int?
+  tuesdayId   Int?
+  wednesdayId Int?
+  thursdayId  Int?
+  fridayId    Int?
+  saturdayId  Int?
+  sundayId    Int?
+
+  monday    Preset? @relation("MondayPreset",    fields: [mondayId],    references: [id])
+  tuesday   Preset? @relation("TuesdayPreset",   fields: [tuesdayId],   references: [id])
+  wednesday Preset? @relation("WednesdayPreset", fields: [wednesdayId], references: [id])
+  thursday  Preset? @relation("ThursdayPreset",  fields: [thursdayId],  references: [id])
+  friday    Preset? @relation("FridayPreset",    fields: [fridayId],    references: [id])
+  saturday  Preset? @relation("SaturdayPreset",  fields: [saturdayId],  references: [id])
+  sunday    Preset? @relation("SundayPreset",    fields: [sundayId],    references: [id])
+}
+
+
+//aaron body part
+enum BodyPart {
+  ABS
+  ARMS
+  BACK
+  BUTT_HIPS
+  CHEST
+  SHOULDERS
+  LEGS
+  FULL_BODY
+}
+
+enum Equipment {
+  NONE
+  DUMBBELLS
+  BARBELL
+  MACHINE
+  RESISTANCE_BANDS
+  CABLES
+}
+
+model Exercise {
+  id          Int                  @id @default(autoincrement())
+  name        String
+  slug        String               @unique
+  shortDesc   String
+  longDesc    String?
+  bodyPart    BodyPart
+  equipment   Equipment
+  difficulty  ResourceDifficulty
+  imageUrl    String?
+  videoUrl    String?
+
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+

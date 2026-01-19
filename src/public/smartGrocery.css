@@ -1,0 +1,245 @@
+/* --------------------
+   Base Reset
+-------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background: #f7f8fa;
+  color: #1f2933;
+  padding: 24px;
+}
+
+/* --------------------
+   Header
+-------------------- */
+.app-header {
+  max-width: 900px;
+  margin: 0 auto 32px;
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* --------------------
+   Meal Container
+-------------------- */
+.meal-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* --------------------
+   Meal Card
+-------------------- */
+.meal-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  margin-bottom: 24px;
+}
+
+/* --------------------
+   Meal Header
+-------------------- */
+.meal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.meal-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.meal-type {
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+/* --------------------
+   Ingredients
+-------------------- */
+.ingredient-list {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+}
+
+.ingredient-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.ingredient-name {
+  font-size: 0.95rem;
+}
+
+.quantity-input {
+  width: 70px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  text-align: right;
+}
+
+/* --------------------
+   Buttons
+-------------------- */
+.meal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #4f46e5;
+  color: white;
+}
+
+.btn.secondary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* --------------------
+   Curtains
+-------------------- */
+.curtain {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #f9fafb;
+  display: none; /* JS will toggle later */
+}
+
+.curtain h3 {
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+/* --------------------
+   Guide
+-------------------- */
+.guide-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  position: relative; /* for dropdown positioning */
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.status-badge.in-stock {
+  background-color: #28a745;
+  color: white;
+}
+.status-badge.running-out {
+  background-color: #ffc107;
+  color: black;
+}
+.status-badge.out-of-stock {
+  background-color: #dc3545;
+  color: white;
+}
+
+.status-options {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 10;
+  min-width: 120px;
+}
+
+.status-options.hidden {
+  display: none;
+}
+
+.status-option {
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.status-option:hover {
+  background-color: #f0f0f0;
+}
+
+/* --------------------
+   Video Placeholder
+-------------------- */
+.video-placeholder {
+  margin-top: 12px;
+  padding: 16px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  text-align: center;
+  color: #374151;
+}
+
+/* --------------------
+   Shopping
+-------------------- */
+.shopping-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.badge.pending {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.badge.purchased {
+  background: #dcfce7;
+  color: #166534;
+}
+
+
